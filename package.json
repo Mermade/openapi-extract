@@ -1,0 +1,33 @@
+{
+  "name": "openapi-extract",
+  "version": "1.0.0",
+  "description": "extract paths or operations from OpenAPI/Swagger definitions",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mike Ralphson",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "js-yaml": "^3.10.0",
+    "reftools": "0.0.20",
+    "yargs": "^10.0.3"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mermade/openapi-extract.git"
+  },
+  "keywords": [
+    "openapi",
+    "openapi3",
+    "swagger",
+    "asyncapi",
+    "extract",
+    "microservice"
+  ],
+  "bugs": {
+    "url": "https://github.com/mermade/openapi-extract/issues"
+  },
+  "homepage": "https://github.com/mermade/openapi-extract#readme"
+}
