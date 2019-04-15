@@ -41,7 +41,7 @@ function extract(obj,options) {
 
     let src = {};
     if (obj.openapi) {
-        src.openapi = src.openapi;
+        src.openapi = obj.openapi;
     }
     else {
         src.swagger = obj.swagger;
