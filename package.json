@@ -10,9 +10,9 @@
   "author": "Mike Ralphson",
   "license": "BSD-3-Clause",
   "dependencies": {
-    "js-yaml": "^3.13.1",
-    "reftools": "^1.0.7",
-    "yargs": "^10.0.3"
+    "reftools": "^1.0.8",
+    "yaml": "^1.6.0",
+    "yargs": "^10.1.2"
   },
   "devDependencies": {},
   "repository": {

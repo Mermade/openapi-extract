@@ -3,8 +3,7 @@
 'use strict';
 
 const fs = require('fs');
-const yaml = require('js-yaml');
-const yargs = require('yargs');
+const yaml = require('yaml');
 const extractor = require('./index.js');
 
 let argv = require('yargs')
@@ -37,13 +36,13 @@ let argv = require('yargs')
     .argv;
 
 let s = fs.readFileSync(argv._[0],'utf8');
-let obj = yaml.safeLoad(s,{json:true});
+let obj = yaml.parse(s);
 let res = extractor.extract(obj,argv);
 if (argv._[0].indexOf('.json')>=0) {
     s = JSON.stringify(res,null,2);
 }
 else {
-    s = yaml.safeDump(res,{lineWidth:-1});
+    s = yaml.stringify(res);
 }
 if (argv._.length>1) {
     fs.writeFileSync(argv._[1],s,'utf8');
