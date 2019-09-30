@@ -11,8 +11,8 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "reftools": "^1.0.8",
-    "yaml": "^1.6.0",
-    "yargs": "^10.1.2"
+    "yaml": "^1.7.0",
+    "yargs": "^14.0.0"
   },
   "devDependencies": {},
   "repository": {
