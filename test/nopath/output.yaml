@@ -1,0 +1,6 @@
+swagger: "2.0"
+info:
+  title: XKCD
+  version: 1.0.0
+paths:
+  /info.1.json: {}

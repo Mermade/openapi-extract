@@ -37,7 +37,12 @@ function extract(obj,options) {
     defaults.info = false;
     defaults.server = false;
     defaults.security = false;
+    defaults.operationid = [];
     options = Object.assign({},defaults,options);
+
+    if (!Array.isArray(options.operationid)) {
+        options.operationid = [options.operationid];
+    }
 
     let src = {};
     if (obj.openapi) {
@@ -66,8 +71,8 @@ function extract(obj,options) {
     if (src.openapi) {
         src.components = {};
         if (options.security) {
-            src.security = obj.security;
-            src.securitySchemes = obj.securitySchemes;
+            if (obj.security) src.security = obj.security;
+            if (obj.securitySchemes) src.securitySchemes = obj.securitySchemes;
         }
         src.components.parameters = {};
         src.components.responses = {};
@@ -76,58 +81,61 @@ function extract(obj,options) {
     }
     else {
         if (options.security) {
-            src.securityDefinitions = obj.securityDefinitions;
-            src.security = obj.security;
+            if (obj.securityDefinitions) src.securityDefinitions = obj.securityDefinitions;
+            if (obj.security) src.security = obj.security;
         }
         src.parameters = {};
         src.responses = {};
         src.headers = {};
         src.definitions = {};
     }
-    let path;
-    let ops = {};
+    let paths = {};
 
-    if (options.operationid) {
-        for (let p in obj.paths) {
-            for (let o in obj.paths[p]) {
-                let op = obj.paths[p][o];
-                if (op.operationId && op.operationId === options.operationid) {
-                    path = p;
-                    ops[o] = clone(op);
+    if (options.operationid.length) {
+        for (let id of options.operationid) {
+            for (let p in obj.paths) {
+                for (let o in obj.paths[p]) {
+                    let op = obj.paths[p][o];
+                    if (op.operationId && op.operationId === id) {
+                        if (!paths[p]) paths[p] = {};
+                        paths[p][o] = clone(op);
+                        deref(paths[p][o],src,obj);
+                    }
                 }
             }
         }
     }
     else {
-        path = options.path;
-        if (options.method && obj.paths[path][options.method]) {
-            ops[options.method] = clone(obj.paths[path][options.method]);
+        paths = {};
+        paths[options.path] = {};
+        if (options.method) paths[options.path][options.method] = {};
+        if (options.method && obj.paths[options.path][options.method]) {
+            paths[options.path][options.method] = clone(obj.paths[options.path][options.method]);
+            deref(paths[options.path][options.method],src,obj);
         }
         else {
-            for (let o in obj.paths[path]) {
+            for (let o in obj.paths[options.path]) {
                 if ((o !== 'description') && (o !== 'summary') &&
                     (!o.startsWith('x-'))) {
                     if (!options.method || options.method === o) {
-                        ops[o] = clone(obj.paths[path][o]);
+                        paths[options.path][o] = clone(obj.paths[options.path][o]);
+                        deref(paths[options.path][o],src,obj);
                     }
                 }
             }
         }
     }
 
-    if (path) src.paths[path] = {};
-    if (path && obj.paths[path] && obj.paths[path].parameters) {
-        src.paths[path].parameters = obj.paths[path].parameters;
+    if (paths) src.paths = paths;
+    for (let p in paths) {
+        if (obj.paths[p] && obj.paths[p].parameters) {
+            src.paths[p].parameters = clone(obj.paths[p].parameters);
+        }
     }
 
-    for (let o in ops) {
-        let op = ops[o];
-        deref(op,src,obj);
-        src.paths[path][o] = op;
-    }
-
-    if (options.server && (Object.keys(ops).length === 1)) {
-        let op = Object.values(ops)[0];
+    if (options.server && (Object.keys(paths).length === 1) &&
+      (Object.keys(Object.values(paths)[0]) === 1)) {
+        const op = Object.values(Object.values(paths)[0])[0];
         if (op.schemes) {
             src.schemes = op.schemes;
             delete op.schemes;
