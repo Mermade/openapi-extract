@@ -1,6 +1,8 @@
 # openapi-extract
 
-extract paths, operations, parameters, schemas etc from OpenAPI/Swagger definitions
+![ci](https://github.com/Mermade/openapi-extract/workflows/ci/badge.svg)
+
+Extract paths, operations, parameters, schemas etc from OpenAPI/Swagger definitions.
 
 Works with OpenAPI/Swagger 2.0 and 3.0.x definitions.
 
