@@ -10,8 +10,8 @@
   "author": "Mike Ralphson",
   "license": "BSD-3-Clause",
   "dependencies": {
-    "reftools": "^1.0.8",
-    "yaml": "^1.7.0",
+    "reftools": "^1.1.1",
+    "yaml": "^1.9.2",
     "yargs": "^14.0.0"
   },
   "devDependencies": {},
