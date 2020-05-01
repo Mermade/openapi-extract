@@ -84,7 +84,7 @@ function extract(obj,options) {
         src.headers = {};
         src.definitions = {};
     }
-    let path = undefined;
+    let path;
     let ops = {};
 
     if (options.operationid) {
