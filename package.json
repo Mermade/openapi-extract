@@ -16,7 +16,7 @@
     "yargs": "^14.0.0"
   },
   "devDependencies": {
-    "mocha": "^7.1.2"
+    "mocha": "^8.0.1"
   },
   "repository": {
     "type": "git",
