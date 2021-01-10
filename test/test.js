@@ -21,7 +21,7 @@ tests.forEach((test) => {
             try {
                 options = yaml.parse(fs.readFileSync(path.join(__dirname, test, 'options.yaml'),'utf8'), {schema:'core'});
             }
-            catch (ex) {};
+            catch (ex) {}
 
             const input = yaml.parse(fs.readFileSync(path.join(__dirname, test, 'input.yaml'),'utf8'), {schema:'core'});
             let readOutput = false;
@@ -30,7 +30,7 @@ tests.forEach((test) => {
               output = yaml.parse(fs.readFileSync(path.join(__dirname, test, 'output.yaml'),'utf8'), {schema:'core'});
               readOutput = true;
             }
-            catch (ex) {};
+            catch (ex) {}
 
             const result = extract.extract(input, options);
             if (!readOutput) {
