@@ -1,0 +1,18 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: yargs
+    versions:
+    - "> 14.0.0"
+  - dependency-name: yaml
+    versions:
+    - 1.10.2
+  - dependency-name: mocha
+    versions:
+    - 8.3.0
+    - 8.3.1
