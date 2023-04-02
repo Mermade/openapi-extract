@@ -12,11 +12,11 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "reftools": "^1.1.1",
-    "yaml": "^1.9.2",
-    "yargs": "^14.0.0"
+    "yaml": "^2.2.1",
+    "yargs": "^17.7.1"
   },
   "devDependencies": {
-    "mocha": "^9.0.1"
+    "mocha": "10.2"
   },
   "repository": {
     "type": "git",
