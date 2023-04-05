@@ -1,3 +1,6 @@
+output/
+*.swp
+
 # Logs
 logs
 *.log

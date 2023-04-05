@@ -3,17 +3,18 @@
 const recurse = require('reftools/lib/recurse.js').recurse;
 const clone = require('reftools/lib/clone.js').clone;
 const jptr = require('reftools/lib/jptr.js').jptr;
+const { AList } = require('./lib/AList.js');
 
 // TODO add a memoized cache
 
-function clean(obj,property) {
+function clean(obj, property) {
     if (obj && (typeof obj[property] === 'object') && (!Object.keys(obj[property]).length)) {
         delete obj[property];
     }
     return obj;
 }
 
-function deref(target,src,obj) {
+function deref(target, src, obj) {
     let changes = 1;
     let seen = {};
     while (changes) {
@@ -31,10 +32,11 @@ function deref(target,src,obj) {
     return target;
 }
 
-function extract(obj,options) {
+function extract(obj, options) {
 
     const defaults = {};
     defaults.info = false;
+    defaults.removeExamples = false;
     defaults.server = false;
     defaults.security = false;
     defaults.operationid = [];
@@ -48,8 +50,11 @@ function extract(obj,options) {
     if (obj.openapi) {
         src.openapi = obj.openapi;
     }
-    else {
+    else if (obj.swagger) {
         src.swagger = obj.swagger;
+    }
+    else {
+        src.asyncapi = obj.asyncapi;
     }
     if (options.info) {
         src.info = obj.info;
@@ -58,7 +63,7 @@ function extract(obj,options) {
         src.info = { title: obj.info.title, version: obj.info.version };
     }
     if (options.server) {
-        if (obj.openapi) {
+        if (obj.openapi || obj.asyncapi) {
             src.servers = obj.servers;
         }
         else {
@@ -73,6 +78,9 @@ function extract(obj,options) {
         if (options.security) {
             if (obj.security) src.security = obj.security;
             if (obj.securitySchemes) src.securitySchemes = obj.securitySchemes;
+            if (obj.components && obj.components.securitySchemes) {
+                src.components.securitySchemes = obj.components.securitySchemes;
+            }
         }
         src.components.parameters = {};
         src.components.responses = {};
@@ -161,10 +169,43 @@ function extract(obj,options) {
     clean(src.components,'headers');
     clean(src.components,'schemas');
     clean(src,'components');
+
+    if (options.removeExamples) {
+        const al = new AList(src);
+        for (let [value,parents] of al) {
+            AList.deleteProperty('example');
+            AList.deleteProperty('examples');
+        }
+    }
     return src;
 }
 
+function shard(obj, options) {
+    const results = new Map();
+    if (!options.operationid) options.operationid = [];
+    if (typeof options.operationid === 'string') {
+        options.operationid = [ options.operationid ];
+    }
+    for (let path in obj.paths) {
+        if (!options.path || options.path === path) {
+            for (let method in obj.paths[path]) {
+                if (!options.method || options.method === method) {
+                    if (!obj.paths[path][method].operationId || options.operationid.length === 0 || (options.operationid && options.operationid.indexOf(obj.paths[path][method].operationId) >= 0)) {
+                        let key = obj.paths[path][method].operationId;
+                        if (!key) key = method+'-'+path;
+                        key = key.split('/').join('-').split('{').join('').split('}').join('');
+                        results.set(key, extract(obj, Object.assign({},options,{ path, method, operationid: obj.paths[path][method].operationId })));
+
+                    }
+                }
+            }
+        }
+    }
+    return results;
+}
+
 module.exports = {
-    extract : extract
+    extract,
+    shard
 };
 
