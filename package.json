@@ -5,7 +5,7 @@
   "main": "index.js",
   "bin": "openapi-extract.js",
   "scripts": {
-    "lint": "npx eslint *.js test/*.js",
+    "lint": "npx eslint *.js lib/*.js test/*.js",
     "test": "npx mocha"
   },
   "author": "Mike Ralphson",

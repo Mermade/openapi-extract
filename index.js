@@ -37,6 +37,7 @@ function extract(obj, options) {
     const defaults = {};
     defaults.info = false;
     defaults.removeExamples = false;
+    defaults.removeExtensions = false;
     defaults.server = false;
     defaults.security = false;
     defaults.operationid = [];
@@ -173,8 +174,15 @@ function extract(obj, options) {
     if (options.removeExamples) {
         const al = new AList(src);
         for (let [value,parents] of al) {
-            AList.deleteProperty('example');
-            AList.deleteProperty('examples');
+            AList.deleteProperty(value, 'example');
+            AList.deleteProperty(value, 'examples');
+        }
+    }
+
+    if (options.removeExtensions) {
+        const al = new AList(src);
+        for (let [value,parents] of al) {
+            AList.deletePrefix(value, 'x-');
         }
     }
     return src;

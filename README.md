@@ -10,17 +10,18 @@ Works with OpenAPI/Swagger 2.0 and 3.x definitions.
 Usage: openapi-extract [options] {infile} [{outfile}]
 
 Options:
-  -h, --help           Show help                                       [boolean]
-  --version            Show version number                             [boolean]
-  --server             include server information                      [boolean]
-  --shard              shard the input to an output directory           [string]
-  -p, --path           the path to extract                              [string]
-  -o, --operationid    the operationIds to extract                       [array]
-  -m, --method         the method to extract for the given path         [string]
-  -i, --info           copy full info object, otherwise minimal        [boolean]
-  -r, --removeExamples remove example/examples properties              [boolean]
-  -s, --security       include security information                    [boolean]
-  -v, --verbose        increase verbosity                              [boolean]
+  -h, --help             Show help                                     [boolean]
+  --version              Show version number                           [boolean]
+  --server               include server information                    [boolean]
+  --shard                shard the input to an output directory         [string]
+  -p, --path             the path to extract                            [string]
+  -o, --operationid      the operationIds to extract                     [array]
+  -m, --method           the method to extract for the given path       [string]
+  -i, --info             copy full info object, otherwise minimal      [boolean]
+  -r, --removeExamples   remove all example/examples properties        [boolean]
+  -x, --removeExtensions remove all x- extension properties            [boolean]
+  -s, --security         include security information                  [boolean]
+  -v, --verbose          increase verbosity                            [boolean]
 ```
 
 or
