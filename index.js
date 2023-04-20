@@ -8,8 +8,8 @@ const { AList } = require('./lib/AList.js');
 // TODO add a memoized cache
 
 function clean(obj, property) {
-    if (obj && (typeof obj[property] === 'object') && (!Object.keys(obj[property]).length)) {
-        delete obj[property];
+    if (obj && (!Array.isArray(obj[property])) && (typeof obj[property] === 'object') && (!Object.keys(obj[property]).length)) {
+        if (property !== 'paths') delete obj[property];
     }
     return obj;
 }
@@ -36,10 +36,12 @@ function extract(obj, options) {
 
     const defaults = {};
     defaults.info = false;
+    defaults.removeDocs = false;
     defaults.removeExamples = false;
     defaults.removeExtensions = false;
     defaults.server = false;
     defaults.security = false;
+    defaults.openai = false;
     defaults.operationid = [];
     options = Object.assign({},defaults,options);
 
@@ -116,13 +118,13 @@ function extract(obj, options) {
     }
     else {
         paths = {};
-        paths[options.path] = {};
+        if (options.path) paths[options.path] = {};
         if (options.method) paths[options.path][options.method] = {};
         if (options.method && obj.paths[options.path][options.method]) {
             paths[options.path][options.method] = clone(obj.paths[options.path][options.method]);
             deref(paths[options.path][options.method],src,obj);
         }
-        else {
+        else if (options.path) {
             for (let o in obj.paths[options.path]) {
                 if ((o !== 'description') && (o !== 'summary') &&
                     (!o.startsWith('x-'))) {
@@ -161,6 +163,15 @@ function extract(obj, options) {
     deref(src.parameters,src,obj);
     deref(src.components,src,obj);
 
+    if (options.openai) {
+        recurse(src,{},function(obj,key,state){
+          if (obj && key === 'description' && obj.description.length > 300) {
+              state.parent[state.pkey].description = obj.description.substring(0,300);
+          }
+        });
+    }
+
+    clean(src,'paths');
     clean(src,'definitions');
     clean(src,'headers');
     clean(src,'responses');
@@ -171,8 +182,8 @@ function extract(obj, options) {
     clean(src.components,'schemas');
     clean(src,'components');
 
+    const al = new AList(src);
     if (options.removeExamples) {
-        const al = new AList(src);
         for (let [value,parents] of al) {
             AList.deleteProperty(value, 'example');
             AList.deleteProperty(value, 'examples');
@@ -180,11 +191,17 @@ function extract(obj, options) {
     }
 
     if (options.removeExtensions) {
-        const al = new AList(src);
         for (let [value,parents] of al) {
             AList.deletePrefix(value, 'x-');
         }
     }
+
+    if (options.removeDocs) {
+        for (let [value,parents] of al) {
+            AList.deleteProperty(value, 'externalDocs');
+        }
+    }
+
     return src;
 }
 
