@@ -216,11 +216,14 @@ function shard(obj, options) {
             for (let method in obj.paths[path]) {
                 if (!options.method || options.method === method) {
                     if (!obj.paths[path][method].operationId || options.operationid.length === 0 || (options.operationid && options.operationid.indexOf(obj.paths[path][method].operationId) >= 0)) {
-                        let key = obj.paths[path][method].operationId;
-                        if (!key) key = method+'-'+path;
-                        key = key.split('/').join('-').split('{').join('').split('}').join('');
-                        results.set(key, extract(obj, Object.assign({},options,{ path, method, operationid: obj.paths[path][method].operationId })));
+                        let output = extract(obj, Object.assign({},options,{ path, method, operationid: obj.paths[path][method].operationId }));
+                        if (output.paths && Object.keys(output.paths).length > 0) {
+                            let key = obj.paths[path][method].operationId;
+                            if (!key) key = method+'-'+path;
+                            key = key.split('/').join('-').split('--').join('-').split('{').join('').split('}').join('');
+                            results.set(key, output);
 
+                      }
                     }
                 }
             }
