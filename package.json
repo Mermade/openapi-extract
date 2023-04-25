@@ -11,7 +11,7 @@
   "author": "Mike Ralphson",
   "license": "BSD-3-Clause",
   "dependencies": {
-    "mkdirp": "^2.1.6",
+    "mkdirp": "^3.0.1",
     "reftools": "^1.1.1",
     "rimraf": "^4.4.1",
     "yaml": "^2.2.1",
