@@ -75,6 +75,10 @@ function extract(obj, options) {
             src.basePath = obj.basePath;
         }
     }
+    if(obj.tags) {
+        src.tags = obj.tags
+    }
+
     src.paths = {};
     if (src.openapi) {
         src.components = {};
@@ -102,6 +106,8 @@ function extract(obj, options) {
     }
     let paths = {};
 
+    const usedTags = new Set();
+
     if (options.operationid.length) {
         for (let id of options.operationid) {
             for (let p in obj.paths) {
@@ -111,6 +117,7 @@ function extract(obj, options) {
                         if (!paths[p]) paths[p] = {};
                         paths[p][o] = clone(op);
                         deref(paths[p][o],src,obj);
+                        usedTags.add(...op.tags);
                     }
                 }
             }
@@ -123,6 +130,7 @@ function extract(obj, options) {
         if (options.method && obj.paths[options.path][options.method]) {
             paths[options.path][options.method] = clone(obj.paths[options.path][options.method]);
             deref(paths[options.path][options.method],src,obj);
+            usedTags.add(...paths[options.path][o].tags);
         }
         else if (options.path) {
             for (let o in obj.paths[options.path]) {
@@ -131,6 +139,7 @@ function extract(obj, options) {
                     if (!options.method || options.method === o) {
                         paths[options.path][o] = clone(obj.paths[options.path][o]);
                         deref(paths[options.path][o],src,obj);
+                        usedTags.add(...paths[options.path][o].tags);
                     }
                 }
             }
@@ -200,6 +209,10 @@ function extract(obj, options) {
         for (let [value,parents] of al) {
             AList.deleteProperty(value, 'externalDocs');
         }
+    }
+
+    if (src.tags) {
+        src.tags = src.tags.filter(tag => usedTags.has(tag.name));
     }
 
     return src;
