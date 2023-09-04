@@ -113,7 +113,7 @@ function extract(obj, options) {
             for (let p in obj.paths) {
                 for (let o in obj.paths[p]) {
                     let op = obj.paths[p][o];
-                    if (op.operationId && op.operationId === id) {
+                    if (op.operationId && op.operationId === id.trim()) {
                         if (!paths[p]) paths[p] = {};
                         paths[p][o] = clone(op);
                         deref(paths[p][o],src,obj);
