@@ -117,7 +117,8 @@ function extract(obj, options) {
                         if (!paths[p]) paths[p] = {};
                         paths[p][o] = clone(op);
                         deref(paths[p][o],src,obj);
-                        usedTags.add(...op.tags);
+                        if(op && op.tags)
+                            usedTags.add(...op.tags);
                     }
                 }
             }
