@@ -167,11 +167,11 @@ function extract(obj, options) {
         }
     }
 
-    deref(src.definitions,src,obj);
     deref(src.headers,src,obj);
     deref(src.responses,src,obj);
     deref(src.parameters,src,obj);
     deref(src.components,src,obj);
+    deref(src.definitions,src,obj);
 
     if (options.openai) {
         recurse(src,{},function(obj,key,state){
