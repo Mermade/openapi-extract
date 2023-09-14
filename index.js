@@ -75,6 +75,10 @@ function extract(obj, options) {
             src.basePath = obj.basePath;
         }
     }
+    if(obj.tags) {
+        src.tags = obj.tags
+    }
+
     src.paths = {};
     if (src.openapi) {
         src.components = {};
@@ -102,15 +106,19 @@ function extract(obj, options) {
     }
     let paths = {};
 
+    const usedTags = new Set();
+
     if (options.operationid.length) {
         for (let id of options.operationid) {
             for (let p in obj.paths) {
                 for (let o in obj.paths[p]) {
                     let op = obj.paths[p][o];
-                    if (op.operationId && op.operationId === id) {
+                    if (op.operationId && op.operationId === id.trim()) {
                         if (!paths[p]) paths[p] = {};
                         paths[p][o] = clone(op);
                         deref(paths[p][o],src,obj);
+                        if(op && op.tags)
+                            usedTags.add(...op.tags);
                     }
                 }
             }
@@ -123,6 +131,7 @@ function extract(obj, options) {
         if (options.method && obj.paths[options.path][options.method]) {
             paths[options.path][options.method] = clone(obj.paths[options.path][options.method]);
             deref(paths[options.path][options.method],src,obj);
+            usedTags.add(...paths[options.path][o].tags);
         }
         else if (options.path) {
             for (let o in obj.paths[options.path]) {
@@ -131,6 +140,7 @@ function extract(obj, options) {
                     if (!options.method || options.method === o) {
                         paths[options.path][o] = clone(obj.paths[options.path][o]);
                         deref(paths[options.path][o],src,obj);
+                        usedTags.add(...paths[options.path][o].tags);
                     }
                 }
             }
@@ -157,11 +167,11 @@ function extract(obj, options) {
         }
     }
 
-    deref(src.definitions,src,obj);
     deref(src.headers,src,obj);
     deref(src.responses,src,obj);
     deref(src.parameters,src,obj);
     deref(src.components,src,obj);
+    deref(src.definitions,src,obj);
 
     if (options.openai) {
         recurse(src,{},function(obj,key,state){
@@ -200,6 +210,10 @@ function extract(obj, options) {
         for (let [value,parents] of al) {
             AList.deleteProperty(value, 'externalDocs');
         }
+    }
+
+    if (src.tags) {
+        src.tags = src.tags.filter(tag => usedTags.has(tag.name));
     }
 
     return src;
